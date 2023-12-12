@@ -4,12 +4,12 @@ manifests:
   rawYaml:
     - ./infra/k8s/*
 build:
-  local:
-    push: false # if true image will push docker hub every new build
-  insecureRegistries:
-    - ticketing.hazi
+  # local:
+  #   push: false # if true image will push docker hub every new build
+  googleCloudBuild:
+    projectId: ticketing-dev-407905
   artifacts:
-    - image: hazitgi/auth-ticketing
+    - image: us.gcr.io/ticketing-dev-407905/auth
       context: auth
       docker:
         dockerfile: Dockerfile
