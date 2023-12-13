@@ -1,6 +1,5 @@
 import express from "express";
 import "express-async-errors";
-import { json } from "body-parser";
 import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 
@@ -13,7 +12,8 @@ import { NotFoundError } from "./errors/not-found-error";
 
 const app = express();
 app.set("trust proxy", true);
-app.use(json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   cookieSession({
     signed: false,
@@ -33,14 +33,12 @@ app.all("*", async (req, res) => {
 app.use(errorHandler);
 
 const start = async () => {
-  console.log(process.env.JWT_KEY);
-
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
 
   try {
-    await mongoose.connect(`mongodb://${process.env.DBHost}:27017/auth`);
+    await mongoose.connect(`mongodb://auth-mongo-db-clusterip-srv:27017/auth`);
 
     console.log("Connected to MongoDb");
   } catch (err) {
