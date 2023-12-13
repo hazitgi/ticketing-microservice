@@ -2,6 +2,7 @@ import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
 import mongoose from "mongoose";
+import cookieSession from "cookie-session";
 
 import { currentUserRouter } from "./routes/current-user";
 import { signinRouter } from "./routes/signin";
@@ -11,7 +12,14 @@ import { errorHandler } from "./middlewares/error-handler";
 import { NotFoundError } from "./errors/not-found-error";
 
 const app = express();
+app.set("trust proxy", true);
 app.use(json());
+app.use(
+  cookieSession({
+    signed: false,
+    secure: true,
+  })
+);
 
 app.use(currentUserRouter);
 app.use(signinRouter);
@@ -25,19 +33,14 @@ app.all("*", async (req, res) => {
 app.use(errorHandler);
 
 const start = async () => {
+  console.log(process.env.JWT_KEY);
+
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY must be defined");
+  }
+
   try {
-    // Replace 'your-database-name' with your actual database name
-    const dbName = "ticketing";
-    const mongoHost = "auth-mongo-db-clusterip-srv"; // This should match the service name in your Kubernetes cluster
-
-    const dbUsername = process.env.MONGO_INITDB_ROOT_USERNAME;
-    const dbPassword = process.env.MONGO_INITDB_ROOT_PASSWORD;
-    // const connectionString = `mongodb://${dbUsername}:${dbPassword}@${mongoHost}:27017/${dbName}`;
-    const connectionString = `mongodb://${mongoHost}:27017/`;
-
-    console.log({connectionString});
-    
-    await mongoose.connect(connectionString);
+    await mongoose.connect(`mongodb://${process.env.DBHost}:27017/auth`);
 
     console.log("Connected to MongoDb");
   } catch (err) {

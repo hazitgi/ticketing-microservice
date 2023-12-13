@@ -16,6 +16,18 @@ spec:
         - name: auth
           image: us.gcr.io/ticketing-dev-407905/auth
           imagePullPolicy: Never
+          env:
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secret-values
+                  key: jwt_key
+            - name: DBHost
+              valueFrom:
+                secretKeyRef:
+                  name: secret-values
+                  key: dbhost
+
 ---
 apiVersion: v1
 kind: Service
@@ -29,4 +41,3 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
-
