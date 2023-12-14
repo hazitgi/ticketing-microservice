@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default ({ req }) => {
   if (typeof window === "undefined") {
-    console.log("**************** window is undefined ****************");
+    // console.log("**************** window is undefined ****************");
     let svc_name = "ingress-nginx-controller";
     let ingress_nginx = "ingress-nginx";
     return axios.create({
@@ -11,7 +11,7 @@ export default ({ req }) => {
       headers: req.headers,
     });
   } else {
-    logger.log("**************** window is defined ****************");
+    // logger.log("**************** window is defined ****************");
     return axios.create({
       baseURL: `https://ticketing.hazi`,
     });
